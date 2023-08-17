@@ -42,7 +42,7 @@ const UploadForm = () => {
                 </div>
                 <input type="submit" value="Upload" />
             </form>
-        <a href='/api/download/${id}'>Download File</a>
+        <a href={`/api/download/${id}`}>Download File</a>
         </>
     )
 }

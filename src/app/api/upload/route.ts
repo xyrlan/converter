@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
     }
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-
     const key = `${uuid()}.${from}`
     const s3 = new AWS.S3()
 

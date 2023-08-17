@@ -37,14 +37,12 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     }
 
     const s3 = new AWS.S3()
-
     const downloadParams = {
         Bucket: bucket,
         Key: conversion.fileLocation.replace(`s3://${bucket}/`, ''),
     }
 
     const stream = Readable.toWeb(s3.getObject(downloadParams).createReadStream())
-
     return new NextResponse(stream as any, {
         headers: {
             'Content-Type': `image/${conversion.to}`,
