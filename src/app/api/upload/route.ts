@@ -5,6 +5,7 @@ import { ConversionStatus } from "@prisma/client";
 import { extname } from "path";
 import { v4 as uuid } from 'uuid'
 import * as AWS from 'aws-sdk'
+import { randomUUID } from "crypto";
 
 
 AWS.config.update({
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const key = `${uuid()}${uuid}`.replace(/-/g, '')
+    const key = `${randomUUID   ()}${randomUUID()}`.replace(/-/g, '')
     const s3 = new AWS.S3()
 
     const params = {
