@@ -34,7 +34,9 @@ const UploadForm = () => {
                 <input
                     type='file'
                     name='file'
-                    onChange={(e) => setFile(e.target.files?.[0])}
+                    onChange={(e) => {
+                        setFile(e.target.files?.[0])
+                    }}
                 />
                 <div>
                     <label>To</label>
@@ -42,7 +44,7 @@ const UploadForm = () => {
                 </div>
                 <input type="submit" value="Upload" />
             </form>
-        <a href={`/api/download/${id}`}>Download File</a>
+            <a href={`/api/download/${id}`}>Download File</a>
         </>
     )
 }

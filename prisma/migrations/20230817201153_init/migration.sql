@@ -34,16 +34,16 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Conversion" (
     "id" TEXT NOT NULL DEFAULT concat('cnv_', replace(cast(gen_random_uuid() as text), '-', '')),
-    "fileLocation" TEXT NOT NULL,
-    "from" TEXT NOT NULL,
-    "to" TEXT NOT NULL,
-    "current" TEXT NOT NULL,
+    "s3Key" TEXT NOT NULL,
+    "fromMime" TEXT NOT NULL,
+    "toMime" TEXT NOT NULL,
+    "currentMime" TEXT NOT NULL,
     "status" "ConversionStatus" NOT NULL,
     "error" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "tenantId" TEXT,
+    "userId" TEXT,
 
     CONSTRAINT "Conversion_pkey" PRIMARY KEY ("id")
 );
@@ -58,7 +58,7 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 ALTER TABLE "User" ADD CONSTRAINT "User_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Conversion" ADD CONSTRAINT "Conversion_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Conversion" ADD CONSTRAINT "Conversion_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Conversion" ADD CONSTRAINT "Conversion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Conversion" ADD CONSTRAINT "Conversion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

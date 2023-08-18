@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const data = await req.formData()
     const file: File | null = data.get('file') as unknown as File
     const to = data.get('to') as string
-    const from = extname(file.name).replace('.', '')
+    const from = file.type
 
     if (!file) {
         return new NextResponse(JSON.stringify({ error: 'No file found' }), {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const key = `${uuid()}.${from}`
+    const key = `${uuid()}${uuid}`.replace(/-/g, '')
     const s3 = new AWS.S3()
 
     const params = {
@@ -50,10 +50,10 @@ export async function POST(req: NextRequest) {
 
     const conversion = await prisma.conversion.create({
         data: {
-            fileLocation: `s3://${bucket}/${key}`,
-            from,
-            to,
-            current: from,
+            s3Key: key,
+            fromMime: from,
+            toMime: to,
+            currentMime: from,
             status: ConversionStatus.PENDING,
         }
     })
