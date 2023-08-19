@@ -26,7 +26,6 @@ const UploadForm = () => {
         } catch (e: any) {
             console.error(e)
         }
-
     }
     return (
         <>

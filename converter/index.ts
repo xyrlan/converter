@@ -1,5 +1,5 @@
 import { Conversion, ConversionStatus } from "@prisma/client"
-import { prisma } from "../lib/prisma"
+import { prisma } from "../src/lib/prisma"
 import * as AWS from 'aws-sdk'
 import { randomUUID } from "crypto"
 import { extension, lookup } from "mime-types"

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../../../../lib/prisma";
+import { prisma } from "../../../../lib/prisma";
 import * as AWS from 'aws-sdk'
 import { Readable } from "stream";
 import { ConversionStatus } from "@prisma/client";

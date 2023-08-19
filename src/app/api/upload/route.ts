@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Buffer } from "buffer";
-import { prisma } from "../../../../lib/prisma";
+import { prisma } from "../../../lib/prisma";
 import { ConversionStatus } from "@prisma/client";
 import { extname } from "path";
 import { v4 as uuid } from 'uuid'
