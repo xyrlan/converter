@@ -23,7 +23,6 @@ const Hero = ({ open }: HeroProps) => (
   </section>
 )
 
-
 export default function Home() {
   const [conversions, setConversions] = useState<FileConversion[]>([])
 
