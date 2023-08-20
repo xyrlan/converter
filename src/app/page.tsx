@@ -1,12 +1,13 @@
 'use client'
 
-import { FileConversion, PageDropzone, StagedFiles } from "../components/upload"
 import { useCallback, useState } from "react";
 import UploadForm from "./form";
 import { useDropzone } from "react-dropzone";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { StringReference } from "aws-sdk/clients/connect";
 import { fileExtensionToMime } from "@/lib/file";
+import { FileConversion, FileManager } from "@/components/file-manager";
+import { Dropzone } from "@/components/dropzone";
 
 type HeroProps = {
   open: () => void
@@ -17,31 +18,17 @@ const Hero = ({ open }: HeroProps) => (
     <h1 className="text-4xl font-bold text-center [text-wrap-balance]">
       Convert any file to anything
     </h1>
-    <Button onClick={open} variant="default" >
-      Click to Upload File
+    <Button variant='default' onClick={open}>
+      Click to Upload
     </Button>
   </section>
 )
 
 export default function Home() {
   const [conversions, setConversions] = useState<FileConversion[]>([])
-
   const onDrop = useCallback((files: File[]) => {
     setConversions(files.map((file) => ({ file })))
   }, [])
-
-  const {
-    open,
-    getRootProps,
-    getInputProps,
-    isFocused,
-    isDragActive,
-    isDragAccept,
-    isDragReject } = useDropzone({ onDrop, noClick: true })
-
-  const className = [isDragActive && 'border border-blue-500']
-    .filter(Boolean)
-    .join(' ')
 
   const onSubmit = async () => {
     if (!conversions.length) return
@@ -59,7 +46,7 @@ export default function Home() {
       if (!res.ok) throw new Error(await res.text())
 
       const { id } = await res.json()
-      setConversions([{ ...conversions[0], resultId: id}])
+      setConversions([{ ...conversions[0], resultId: id }])
     } catch (e: any) {
       console.error(e)
     }
@@ -67,12 +54,19 @@ export default function Home() {
   }
 
   return (
-    <div {...getRootProps({ className })}>
-      <input {...getInputProps()} />
-      <main className="container mx-auto">
-        <Hero open={open} />
-        <StagedFiles conversions={conversions} setConversions={setConversions} onConvert={() => onSubmit()}/>
-      </main>
-    </div>
+    <Dropzone onDrop={onDrop}>
+      {({ open }) => (
+        <main className="container mx-auto">
+          <Hero open={open} />
+          {conversions.length > 0 && (
+              <FileManager
+                conversions={conversions}
+                setConversions={setConversions}
+                onConvert={() => onSubmit()}
+              />
+            )}
+        </main>
+      )}
+    </Dropzone>
   )
 }

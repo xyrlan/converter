@@ -1,9 +1,5 @@
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    scripts: {
-        postbuild: "npm run convert-data"
-    }
-}
+const nextConfig = {}
 
 module.exports = nextConfig
