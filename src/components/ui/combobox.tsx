@@ -42,10 +42,10 @@ export function Combobox({ value, setValue }: Props) {
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
-                    variant="ghost"
+                    variant="default"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-fit justify-between px-2"
+                    className="max-md:text-xs justify-between col-span-4 md:col-span-1"
                 >
                     {value
                         ? formats.find((format) => format.value === value)?.label

@@ -8,6 +8,7 @@ import { StringReference } from "aws-sdk/clients/connect";
 import { fileExtensionToMime } from "@/lib/file";
 import { FileConversion, FileManager } from "@/components/file-manager";
 import { Dropzone } from "@/components/dropzone";
+import Image from "next/image";
 
 type HeroProps = {
   open: () => void
@@ -29,7 +30,6 @@ export default function Home() {
   const onDrop = useCallback((files: File[]) => {
     setConversions(files.map((file) => ({ file })))
   }, [])
-
   const onSubmit = async () => {
     if (!conversions.length) return
 
@@ -56,16 +56,21 @@ export default function Home() {
   return (
     <Dropzone onDrop={onDrop}>
       {({ open }) => (
-        <main className="container mx-auto">
-          <Hero open={open} />
-          {conversions.length > 0 && (
+        <>
+        <header>
+          {/* <Image src='' /> */}
+        </header>
+          <main className="container mx-auto">
+            <Hero open={open} />
+            {conversions.length > 0 && (
               <FileManager
                 conversions={conversions}
                 setConversions={setConversions}
                 onConvert={() => onSubmit()}
               />
             )}
-        </main>
+          </main>
+        </>
       )}
     </Dropzone>
   )

@@ -9,6 +9,7 @@ export type FileConversion = {
     file?: File
     to?: string
     resultId?: string
+    type?: string
 }
 
 type FileManagerProps = {
@@ -19,22 +20,25 @@ type FileManagerProps = {
 
 export const FileManager = ({ conversions, setConversions, onConvert }: FileManagerProps) => {
     return (
-        <div>
-            <ul className='border rounded-md p-2'>
+        <div className="">
+            <ul className='border rounded-md p-2 max-w-7xl '>
                 {
                     conversions.map((conversion, key) => (
-                        <li key={key} className='grid grid-cols-[48px_minmax(400px,_1fr)_100px_200px_50px]  items-center py-2'>
+                        <li key={key} className='grid place-content-between grid-flow-col items-center py-2 gap-2'>
 
                             <div>
-                                <FileImageIcon className='w-8 h-8' />
+                                <FileImageIcon className='w-4 h-4 md:w-8 md:h-8' />
                             </div>
-                            <div>
-                                <span className="font-mono bg-neutral-100 rounded p-2">
+                            <div className="md:col-span-1 col-span-3">
+                                <span className="font-mono bg-neutral-100 rounded p-2 max-md:text-xs text-center">
                                     {conversion.file?.name}
                                 </span>
                             </div>
-                            <span className="px-2">
+                            <span className="px-2 max-md:text-xs">
                                 {bytesToSize(conversion.file?.size || 0)}
+                            </span>
+                            <span className="px-2 max-md:text-xs flex max-md:hidden">
+                                from<span className="font-mono mx-2">&apos;{conversion.file?.type.split('/')[1].toUpperCase()}&apos;</span> to
                             </span>
                             {!conversion.resultId && (
                                 <>
@@ -48,7 +52,7 @@ export const FileManager = ({ conversions, setConversions, onConvert }: FileMana
                                         }
                                     />
                                     <Button
-                                        className=""
+                                        className="w-fit"
                                         variant='outline' onClick={() => {
                                             setConversions({ ...conversions }.filter((c, i) => i !== key))
                                         }}>
