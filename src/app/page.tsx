@@ -1,14 +1,10 @@
 'use client'
-
-import { useCallback, useState } from "react";
-import UploadForm from "./form";
-import { useDropzone } from "react-dropzone";
-import { Button, ButtonProps } from "@/components/ui/button";
-import { StringReference } from "aws-sdk/clients/connect";
-import { fileExtensionToMime } from "@/lib/file";
-import { FileConversion, FileManager } from "@/components/file-manager";
-import { Dropzone } from "@/components/dropzone";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { FileManager } from "@/components/files/file-manager";
+import { Dropzone } from "@/components/files/dropzone";
+import OpenButton from "@/components/open-button";
+import { useCallback } from "react";
+import { useConversions } from "@/components/files/provider";
 
 type HeroProps = {
   open: () => void
@@ -19,59 +15,32 @@ const Hero = ({ open }: HeroProps) => (
     <h1 className="text-4xl font-bold text-center [text-wrap-balance]">
       Convert any file to anything
     </h1>
-    <Button variant='default' onClick={open}>
-      Click to Upload
-    </Button>
+    <OpenButton open={open}/>
   </section>
 )
 
 export default function Home() {
-  const [conversions, setConversions] = useState<FileConversion[]>([])
+
+ const {setConversions, conversions} = useConversions()
+
   const onDrop = useCallback((files: File[]) => {
     setConversions(files.map((file) => ({ file })))
-  }, [])
-  const onSubmit = async () => {
-    if (!conversions.length) return
-
-    try {
-      const data = new FormData()
-      data.set('file', conversions[0].file as File)
-      data.set('to', fileExtensionToMime(conversions[0].to as string) as string)
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: data,
-      })
-
-      if (!res.ok) throw new Error(await res.text())
-
-      const { id } = await res.json()
-      setConversions([{ ...conversions[0], resultId: id }])
-    } catch (e: any) {
-      console.error(e)
-    }
-
-  }
+}, [])
 
   return (
-    <Dropzone onDrop={onDrop}>
-      {({ open }) => (
-        <>
-        <header>
-          {/* <Image src='' /> */}
-        </header>
-          <main className="container mx-auto">
+    <>
+      <header>
+        {/* <Image src='' /> */}
+      </header>
+      <Dropzone onDrop={onDrop}>
+        {({ open }) => (
+          <main className="container mx-auto border-opacity-0 outline-black h-screen">
             <Hero open={open} />
-            {conversions.length > 0 && (
-              <FileManager
-                conversions={conversions}
-                setConversions={setConversions}
-                onConvert={() => onSubmit()}
-              />
-            )}
+            <FileManager
+            />
           </main>
-        </>
-      )}
-    </Dropzone>
+        )}
+      </Dropzone>
+    </>
   )
 }

@@ -42,7 +42,7 @@ model User {
 
 enum ConversionStatus {
   PENDING
-  PROCESSION
+  PROCESSING
   DONE
   ERROR
 }

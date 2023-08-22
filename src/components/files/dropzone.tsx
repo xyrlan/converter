@@ -1,5 +1,8 @@
+'use client'
 import { DropEvent, FileRejection, useDropzone } from "react-dropzone"
-import { ButtonProps } from "./ui/button"
+import { ButtonProps } from "../ui/button"
+import React, {useCallback} from 'react'
+import { useConversions } from "./provider"
 
 type Props = {
     onDrop?: <T extends File>(
@@ -10,7 +13,7 @@ type Props = {
     children?: React.ReactNode | (({ open }: { open: () => void }) => React.ReactNode)
 }
 
-export const Dropzone = ({ onDrop, children }: Props) => {
+export const Dropzone = ({ children, onDrop }: Props) => {
 
     const {
         open,
@@ -21,7 +24,7 @@ export const Dropzone = ({ onDrop, children }: Props) => {
         isDragAccept,
         isDragReject } = useDropzone({ onDrop, noClick: true })
 
-    const className = [isDragActive && 'border border-blue-500']
+    const className = [isDragActive ? 'blur-sm' : '']
         .filter(Boolean)
         .join(' ')
 
