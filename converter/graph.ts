@@ -1,67 +1,70 @@
 import { Converter } from './converters/def';
+import * as rawConverters from './converters'
 
+
+const converters = rawConverters as unknown as Record<string, Converter>
+console.log('Converters', converters)
 type Edge = {
-    from: string;
-    to: string;
-    converter: Converter;
-};
-
-type Node = {
-    type: string;
-    edges: Edge[];
-};
-
-type Graph = Record<string, Node>;
-
-export function createGraph(converters: Record<string, Converter>): Graph {
-    const graph: Graph = {};
-
-    for (const converterName in converters) {
-        const converter = converters[converterName];
-        if (!graph[converter.from]) {
-            graph[converter.from] = { type: converter.from, edges: [] };
-        }
-        if (!graph[converter.to]) {
-            graph[converter.to] = { type: converter.to, edges: [] };
-        }
-        graph[converter.from].edges.push({
-            from: converter.from,
-            to: converter.to,
-            converter,
-        });
-    }
-
-    return graph;
+    converter: Converter
+    from: Node
+    to: Node
 }
 
-export function shortestPath(graph: Graph, start: string, end: string): Converter[] | null {
-    const visited: Record<string, boolean> = {};
-    const queue: { node: string; path: Converter[] }[] = [];
+type Node = {
+    type: string
+    edges: Edge[]
+}
 
-    queue.push({ node: start, path: [] });
+const nodes: Record<string, Node> = {}
+Object.keys(converters).forEach((key) => {
+    const converter = converters[key as keyof typeof converters]
+    nodes[converter.to] = nodes[converter.to] || {
+        type: converter.to,
+        edges: [],
+    }
+    nodes[converter.from] = nodes[converter.from] || {
+        type: converter.from,
+        edges: [],
+    }
+    nodes[converter.from].edges.push({
+        converter,
+        from: nodes[converter.from],
+        to: nodes[converter.to],
+    })
+})
+
+export { nodes }
+
+
+export type Path = Edge[] | null;
+
+export function findPath(start: string, end: string) {
+    const visited: Record<string, boolean> = {};
+    const queue: { node: Node, path: Edge[] }[] = [];
+
+    queue.push({ node: nodes[start], path: [] });
     visited[start] = true;
 
     while (queue.length > 0) {
-        const current = queue.shift();
+        const current = queue.shift()
         if (!current) {
             continue;
         }
 
-        const currentNode = graph[current.node];
-        if (currentNode.type === end) {
-            return current.path;
+        if (current.node.type === end) {
+            return current.path
         }
-
-        for (const edge of currentNode.edges) {
-            if (!visited[edge.to]) {
+        for (const edge of current.node.edges) {
+            if (!visited[edge.to.type]) {
                 queue.push({
                     node: edge.to,
-                    path: [...current.path, edge.converter],
-                });
-                visited[edge.to] = true;
+                    path: [...current.path, edge],
+                })
+
+                visited[edge.to.type] = true
             }
         }
     }
 
-    return null;
+    return null
 }

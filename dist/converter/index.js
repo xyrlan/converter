@@ -29,15 +29,12 @@ const AWS = __importStar(require("aws-sdk"));
 const crypto_1 = require("crypto");
 const mime_types_1 = require("mime-types");
 const graph_1 = require("./graph");
-const rawConverters = __importStar(require("./converters"));
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_DEFAULT_REGION,
 });
 const bucket = process.env.S3_BUCKET_NAME;
-const converters = rawConverters;
-const graph = (0, graph_1.createGraph)(converters);
 const convert = async (c) => {
     try {
         const s3 = new AWS.S3();
@@ -47,8 +44,8 @@ const convert = async (c) => {
         };
         console.log(`Downloading File`, downloadParams);
         const res = await s3.getObject(downloadParams).promise();
-        const edges = (0, graph_1.shortestPath)(graph, c.fromMime, c.toMime);
-        if (!edges) {
+        const converters = (0, graph_1.findPath)(c.fromMime, c.toMime);
+        if (!converters) {
             await prisma_1.prisma.conversion.update({
                 where: {
                     id: c.id,
@@ -56,15 +53,15 @@ const convert = async (c) => {
                 data: {
                     error: `Could not convert from ${c.fromMime} to ${c.toMime}`,
                     status: client_1.ConversionStatus.ERROR,
-                },
+                }
             });
             return;
         }
         let converted = res.Body;
-        for (const edge of edges) {
-            converted = await edge(converted); // Chame o conversor da aresta com o buffer atualizado
+        for (const edge of converters) {
+            converted = await edge.converter(res.Body);
         }
-        const mime = (0, mime_types_1.extension)(edges[edges.length - 1].to);
+        const mime = (0, mime_types_1.extension)(converters[converters.length - 1].to.type);
         const key = ((0, crypto_1.randomUUID)() + (0, crypto_1.randomUUID)()).replace(/-/g, '');
         console.log(`Uploading to`, key);
         const uploadParams = {
@@ -75,7 +72,7 @@ const convert = async (c) => {
         await s3.upload(uploadParams).promise();
         await prisma_1.prisma.conversion.update({
             where: {
-                id: c.id,
+                id: c.id
             },
             data: {
                 status: client_1.ConversionStatus.DONE,
@@ -87,11 +84,11 @@ const convert = async (c) => {
     catch (err) {
         await prisma_1.prisma.conversion.update({
             where: {
-                id: c.id,
+                id: c.id
             },
             data: {
                 status: client_1.ConversionStatus.ERROR,
-                error: `Could not convert: ${err === null || err === void 0 ? void 0 : err.message}`,
+                error: `Could not conver: ${err === null || err === void 0 ? void 0 : err.message}`,
             },
         });
     }
