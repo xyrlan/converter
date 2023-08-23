@@ -1,12 +1,14 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Cinzel } from 'next/font/google'
+import { Noto_Serif } from 'next/font/google'
 import { Providers } from './providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Noto_Serif({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Converter',
+  title: 'WizardFile',
   description: 'Convert anything to anything',
 }
 
