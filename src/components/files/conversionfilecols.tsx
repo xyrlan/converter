@@ -41,43 +41,56 @@ const ConversionFiLeCols = ({ onRemove, conversion, onConverTo, onUpdate }: Conv
 
     const [open, setOpen] = useState(false)
     const { file, to } = conversion
-    
-    return (
-        <li className='grid place-content-between grid-flow-col items-center py-2 gap-2'>
 
-            <div>
-                <FileImageIcon className='w-4 h-4 md:w-8 md:h-8' />
-            </div>
-            <div className="md:col-span-1 col-span-3">
-                <span className="font-mono bg-neutral-100 rounded p-2 max-md:text-xs text-center">
+    return (
+        <li className='grid grid-cols-5 items-center p-2 gap-2 border-spacing-2 border-separate border m-2 rounded'>
+
+            <div className="md:col-span-2 flex items-center gap-1">
+                <FileImageIcon className='w-4 h-4 bg-neutral-100' />
+                <span className="font-mono rounded max-md:text-xs      truncate max-w-xs">
                     {file.name}
                 </span>
             </div>
-            <span className="px-2 max-md:text-xs font-mono">
+
+            <span className="md:col-span-1 max-md:text-xs font-mono">
                 {bytesToSize(file.size || 0)}
             </span>
-            <span className="px-2 max-md:text-xs flex max-md:hidden">
-                {conversion.status === UXConversionStatus.Pending && <div>Pending</div>}
-                {conversion.status === UXConversionStatus.Uploading && <div>Uploading: {(conversion.upload || 0) * 100}%</div>}
-                {conversion.status === UXConversionStatus.Processing && <div>Converting</div>}
-                {conversion.status === UXConversionStatus.Error && <div>Error!</div>}
-                {conversion.status === UXConversionStatus.Complete && <div>Done</div>}
+
+            <span className="md:col-span-1 max-md:text-xs">
+                {conversion.status === UXConversionStatus.Pending && <div className='font-mono font-semibold flex items-center gap-2'>Pending...</div>}
+
+                {conversion.status === UXConversionStatus.Uploading &&
+                    <div className='font-mono font-semibold flex items-center gap-2'>
+                        <div className="h-4 w-4 rounded-full border-4 border-t-transparent border-l-transparent animate-spin border-neutral-400" />
+                        Uploading
+                    </div>}
+                {conversion.status === UXConversionStatus.Processing &&
+                    <div className='font-mono flex items-center gap-2 font-semibold'>
+                        <div className="h-4 w-4 rounded-full border-4 border-t-transparent border-l-transparent animate-spin border-neutral-400" />
+                        Converting
+                    </div>}
+                {conversion.status === UXConversionStatus.Error && <div className='font-mono text-red-600 font-semibold'>Error!</div>}
+                {conversion.status === UXConversionStatus.Complete && <div className='font-mono text-green-600 font-semibold'>Done</div>}
             </span>
 
-            <>
-                <Combobox
-                    value={conversion.to?.ext || ''}
-                    setValue={onConverTo}
-                />
+            <div className="md:col-span-1 flex items-center gap-2">
+                {conversion.status === UXConversionStatus.Pending || conversion.status === UXConversionStatus.Error && (
+                    <Combobox
+                        value={conversion.to?.ext || ''}
+                        setValue={onConverTo}
+                    />
+                )}
+
+                {conversion.status === UXConversionStatus.Complete && (
+                    <DownloadButton resultId={conversion.id} />
+                )}
                 <Button
-                    className="w-fit"
+                    disabled={conversion.status === UXConversionStatus.Uploading || conversion.status === UXConversionStatus.Processing}
+                    className="w-fit border-none"
                     variant='outline' onClick={onRemove}>
                     <XIcon className="w-4 h-4" />
                 </Button>
-            </>
-            {conversion.status === UXConversionStatus.Complete && (
-                <DownloadButton resultId={conversion.id} />
-            )}
+            </div>
         </li>
     )
 }

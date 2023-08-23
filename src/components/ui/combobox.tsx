@@ -37,11 +37,11 @@ export function Combobox({ value, setValue }: Props) {
                     variant="default"
                     role="combobox"
                     aria-expanded={open}
-                    className="max-md:text-xs justify-between col-span-4 md:col-span-1"
+                    className="max-md:text-xs justify-between "
                 >
                     {value
                         ? formats.find((format) => format.ext === value)?.ext
-                        : "Convert To..."}
+                        : "To..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>

@@ -8,11 +8,12 @@ type Props = {
     resultId: string | undefined
 }
 
-export const DownloadButton = ({resultId}: Props) => {
+export const DownloadButton = ({ resultId }: Props) => {
 
 
     return (
         <Button
+            className='font-semibold'
             as={Link}
             color='success'
             href={`/api/download/${resultId}`}

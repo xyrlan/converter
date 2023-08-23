@@ -20,25 +20,32 @@ type FileManagerProps = {
 export const FileManager = () => {
 
     const { conversions, updateConversion, removeConversion, convert } = useConversions()
-
+    
     return (
         <>
             {conversions.length > 0 && (
                 <div className="max-w-7xl mx-auto">
-                    <ul className='border rounded-md p-2'>
+                    <ul className='sm:border rounded-md mx-auto w-fit'>
                         {conversions.map((conversion, key) => (
-                                <ConversionFiLeCols
-                                    conversion={conversion}
-                                    key={key}
-                                    onUpdate={(c) => updateConversion(key, c)}
-                                    onRemove={() => removeConversion(key)}
-                                    onConverTo={(to) => {
-                                        updateConversion(key, { to })
-                                    }} />
-                            ))}
+                            <ConversionFiLeCols
+                                conversion={conversion}
+                                key={key}
+                                onUpdate={(c) => updateConversion(key, c)}
+                                onRemove={() => removeConversion(key)}
+                                onConverTo={(to) => {
+                                    updateConversion(key, { to })
+                                }} />
+                        ))}
                     </ul>
-                    <div className="flex justify-end py-2">
-                        <Button variant='default' disabled={conversions.some((conversion) => conversion.status != UXConversionStatus.Pending)} onClick={convert}>
+                    <div className="flex justify-center mt-5 py-2">
+                        <Button
+                            variant='default'
+                            disabled={conversions.some(
+                                (conversion) => conversion.status === UXConversionStatus.Processing ||
+                                    conversion.status === UXConversionStatus.Uploading
+                            )}
+                            onClick={convert}
+                        >
                             Convert Files
                         </Button>
                     </div>
