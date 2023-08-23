@@ -47,7 +47,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     return new NextResponse(stream as any, {
         headers: {
             'Content-Type': conversion.toMime,
-            'Content-Disposition': `attachment; filename=download.${extension(conversion.toMime
+            'Content-Disposition': `attachment; filename=${conversion.name}.${extension(conversion.toMime
                 )}`,
         },
     })

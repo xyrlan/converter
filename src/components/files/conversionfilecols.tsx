@@ -74,7 +74,7 @@ const ConversionFiLeCols = ({ onRemove, conversion, onConverTo, onUpdate }: Conv
             </span>
 
             <div className="md:col-span-1 flex items-center gap-2">
-                {conversion.status === UXConversionStatus.Pending || conversion.status === UXConversionStatus.Error && (
+                {conversion.status != UXConversionStatus.Complete && (
                     <Combobox
                         value={conversion.to?.ext || ''}
                         setValue={onConverTo}

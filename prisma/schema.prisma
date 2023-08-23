@@ -49,6 +49,7 @@ enum ConversionStatus {
 
 model Conversion {
   id          String           @id @default(dbgenerated("concat('cnv_', replace(cast(gen_random_uuid() as text), '-', ''))")) @db.Text
+  name        String
   s3Key       String
   fromMime    String
   toMime      String

@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
     const file: File | null = data.get('file') as unknown as File
     const to = data.get('to') as string
     const from = fileExtensionToMime(file.name)
+    const name = file.name.split('.')[0]
 
     if (!file) {
         return new NextResponse(JSON.stringify({ error: 'No file found' }), {
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
 
     const conversion = await prisma.conversion.create({
         data: {
+            name: name,
             s3Key: key,
             fromMime: from,
             toMime: to,
