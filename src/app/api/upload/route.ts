@@ -6,6 +6,7 @@ import { extname } from "path";
 import { v4 as uuid } from 'uuid'
 import * as AWS from 'aws-sdk'
 import { randomUUID } from "crypto";
+import { fileExtensionToMime } from "@/lib/file";
 
 
 AWS.config.update({
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     const data = await req.formData()
     const file: File | null = data.get('file') as unknown as File
     const to = data.get('to') as string
-    const from = file.type
+    const from = fileExtensionToMime(file.name)
 
     if (!file) {
         return new NextResponse(JSON.stringify({ error: 'No file found' }), {
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const key = `${randomUUID   ()}${randomUUID()}`.replace(/-/g, '')
+    const key = `${randomUUID()}${randomUUID()}`.replace(/-/g, '')
     const s3 = new AWS.S3()
 
     const params = {

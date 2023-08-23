@@ -5,8 +5,6 @@ import { randomUUID } from "crypto"
 import { extension, lookup } from "mime-types"
 import { findPath } from "./graph"
 
-
-
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -24,9 +22,13 @@ const convert = async (c: Conversion) => {
         }
         console.log(`Downloading File`, downloadParams)
         const res = await s3.getObject(downloadParams).promise()
+        console.log('Converting File', (c.fromMime, c.toMime))
 
         const converters = findPath(c.fromMime, c.toMime)
         if (!converters) {
+            console.error(
+                `Could not find converters for ${c.fromMime} to ${c.toMime}`
+            )
             await prisma.conversion.update({
                 where: {
                     id: c.id,
@@ -43,7 +45,6 @@ const convert = async (c: Conversion) => {
         for (const edge of converters) {
             converted = await edge.converter(res.Body as Buffer)
         }
-
 
         const mime = extension(converters[converters.length - 1].to.type) as string
 

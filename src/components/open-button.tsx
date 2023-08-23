@@ -1,9 +1,13 @@
 'use client'
 import React from 'react'
 import { Button } from './ui/button'
+import { useConversions } from './files/provider'
 
 
-const OpenButton = ({open}: any) => {
+const OpenButton = () => {
+    const { dropzone } = useConversions()
+    const { open } = dropzone
+
     return (
         <Button variant='default' onClick={open}>
             Click to Upload

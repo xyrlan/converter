@@ -1,6 +1,6 @@
 'use client'
 import { Button } from "../ui/button"
-import { Conversion, ConversionProvider, useConversions } from "./provider"
+import { Conversion, ConversionProvider, UXConversionStatus, useConversions } from "./provider"
 import ConversionFiLeCols from "./conversionfilecols"
 
 
@@ -30,6 +30,7 @@ export const FileManager = () => {
                                 <ConversionFiLeCols
                                     conversion={conversion}
                                     key={key}
+                                    onUpdate={(c) => updateConversion(key, c)}
                                     onRemove={() => removeConversion(key)}
                                     onConverTo={(to) => {
                                         updateConversion(key, { to })
@@ -37,7 +38,7 @@ export const FileManager = () => {
                             ))}
                     </ul>
                     <div className="flex justify-end py-2">
-                        <Button variant='default' onClick={convert}>
+                        <Button variant='default' disabled={conversions.some((conversion) => conversion.status != UXConversionStatus.Pending)} onClick={convert}>
                             Convert Files
                         </Button>
                     </div>

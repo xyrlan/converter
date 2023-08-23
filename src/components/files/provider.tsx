@@ -1,29 +1,39 @@
 'use client'
-import { ConversionStatus } from "@prisma/client";
-import { useContext, useState, useCallback, createContext } from "react";
+import { useContext, useState, useCallback, createContext, SetStateAction, Dispatch } from "react";
 import { DropzoneState, useDropzone as useCreateDropzone } from "react-dropzone";
+import { fileExtensionToMime } from "@/lib/file";
+import axios from 'axios';
+import { Format } from "@/lib/types";
 
+
+export enum UXConversionStatus {
+    Pending,
+    Uploading,
+    Processing,
+    Complete,
+    Error,
+}
 
 export type Conversion = {
     id?: string
     file: File
-    to?: string
-    status: ConversionStatus
+    to?: Format
+    status: UXConversionStatus
     upload?: number
-    resultId?: string
+    error?: any
 }
 
 export type ConversionContextProps = {
     dropzone: DropzoneState
     conversions: Conversion[]
-    setConversions: any
+    setConversions: Dispatch<SetStateAction<Conversion[]>>
     removeConversion: (index: number) => void
     updateConversion: (index: number, conversion: Partial<Conversion>) => void
     convert: () => Promise<void>
 }
 
 const ConversionContext = createContext<ConversionContextProps>(
-    {} as ConversionContextProps
+    {} as unknown as ConversionContextProps
 )
 
 type Props = {
@@ -56,7 +66,7 @@ export const ConversionProvider = ({ children }: Props) => {
             ...conversions,
             ...files.map((file) => ({
                 file,
-                status: ConversionStatus.PENDING,
+                status: UXConversionStatus.Pending,
             })),
         ])
     }, [])
@@ -66,18 +76,35 @@ export const ConversionProvider = ({ children }: Props) => {
     const convert = async () => {
         for (let i = 0; i < conversions.length; i++) {
             const c = conversions[i]
-            updateConversion(i, { status: ConversionStatus.PROCESSING })
+            updateConversion(i, { status: UXConversionStatus.Uploading })
             try {
                 const formData = new FormData()
                 formData.append('file', c.file)
-                formData.append('to', c.to || '')
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData,
+                formData.append('to', c.to?.mime || '')
+
+                const { data } = await axios.postForm('/api/upload', formData, {
+                    onUploadProgress: ({ progress }) => {
+                        updateConversion(i, { upload: progress })
+                    },
                 })
-                if (!res.ok) throw new Error('Failed to upload')
-                const data = await res.json()
-            } catch (err: any) { }
+                const { id } = data
+                updateConversion(i, { status: UXConversionStatus.Processing, id })
+
+                let done = false
+                do {
+                    const { data } = await axios.get(`/api/status/${id}`)
+                    done = data.status === 'DONE'
+                    updateConversion(i, {
+                        status:
+                            data.status === 'DONE'
+                                ? UXConversionStatus.Complete
+                                : UXConversionStatus.Processing,
+                    })
+                    await new Promise((resolve) => setTimeout(resolve, 1000))
+                } while (!done)
+            } catch (err: any) {
+                updateConversion(i, { status: UXConversionStatus.Error, error: err })
+            }
         }
     }
     return (

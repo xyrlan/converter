@@ -17,23 +17,14 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useConversions } from "../files/provider"
+import { formats } from "../../../converter/converters/formats"
+import { Format } from "@/lib/types"
 
 
-const formats = [
-    { value: 'jpg', label: 'JPG' },
-    { value: 'png', label: 'PNG' },
-    { value: 'gif', label: 'GIF' },
-    { value: 'webp', label: 'WEBP' },
-    { value: 'tiff', label: 'TIFF' },
-    { value: 'bmp', label: 'BMP' },
-    { value: 'heic', label: 'HEIC' },
-    { value: 'heif', label: 'HEIF' },
-    { value: 'ico', label: 'ICO' }
-];
 
 type Props = {
     value: string
-    setValue: (value: string) => void
+    setValue: (format: Format) => void
 }
 
 export function Combobox({ value, setValue }: Props) {
@@ -49,8 +40,8 @@ export function Combobox({ value, setValue }: Props) {
                     className="max-md:text-xs justify-between col-span-4 md:col-span-1"
                 >
                     {value
-                        ? formats.find((format) => format.value === value)?.label
-                        : "To..."}
+                        ? formats.find((format) => format.ext === value)?.ext
+                        : "Convert To..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -61,19 +52,20 @@ export function Combobox({ value, setValue }: Props) {
                     <CommandGroup>
                         {formats.map((format) => (
                             <CommandItem
-                                key={format.value}
-                                onSelect={(currentValue) => {
-                                    setValue(currentValue === value ? "" : currentValue)
+                                key={format.mime}
+                                onSelect={() => {
+                                    setValue(format)
                                     setOpen(false)
-                                }}
+                                }
+                                }
                             >
                                 <Check
                                     className={cn(
                                         "mr-2 h-4 w-4",
-                                        value === format.value ? "opacity-100" : "opacity-0"
+                                        value === format.mime ? "opacity-100" : "opacity-0"
                                     )}
                                 />
-                                {format.label}
+                                {format.ext}
                             </CommandItem>
                         ))}
                     </CommandGroup>

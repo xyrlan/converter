@@ -1,25 +1,49 @@
 'use client'
 
-import React, { useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { FileImageIcon, XIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import { Combobox } from "../ui/combobox"
 import { bytesToSize } from "@/lib/file"
 import { DownloadButton } from "../download-button"
-import { Conversion, useConversions } from './provider'
+import { Conversion, UXConversionStatus, useConversions } from './provider'
+import useSWR from 'swr'
+import { ConversionStatus } from '@prisma/client'
+import { Format } from '@/lib/types'
+
+const fetcher = (...args: Parameters<typeof fetch>) => fetch(...args).then((res => res.json()))
 
 type ConversionFileColsProps = {
     conversion: Conversion;
     onRemove: () => void;
-    onConverTo: (to: string) => void;
-    key: number
-  };
+    onConverTo: (format: Format) => void;
+    onUpdate: (conversion: Partial<Conversion>) => void
 
-const ConversionFiLeCols = ({ onRemove, conversion, onConverTo, key }: ConversionFileColsProps) => {
+};
+
+const ConversionFiLeCols = ({ onRemove, conversion, onConverTo, onUpdate }: ConversionFileColsProps) => {
+    const { data } = useSWR(
+        () =>
+            conversion.id && conversion.status != UXConversionStatus.Complete
+                ? `/api/status/${conversion.id}`
+                : 'null',
+        fetcher,
+        { refreshInterval: 1000 }
+    )
+
+    useEffect(() => {
+        if (data?.status === ConversionStatus.DONE) {
+            onUpdate({
+                status: UXConversionStatus.Complete
+            })
+        }
+    }, [data?.status])
+
     const [open, setOpen] = useState(false)
     const { file, to } = conversion
+    
     return (
-        <li key={key} className='grid place-content-between grid-flow-col items-center py-2 gap-2'>
+        <li className='grid place-content-between grid-flow-col items-center py-2 gap-2'>
 
             <div>
                 <FileImageIcon className='w-4 h-4 md:w-8 md:h-8' />
@@ -33,23 +57,26 @@ const ConversionFiLeCols = ({ onRemove, conversion, onConverTo, key }: Conversio
                 {bytesToSize(file.size || 0)}
             </span>
             <span className="px-2 max-md:text-xs flex max-md:hidden">
-                <span className="font-mono mx-2">&apos;{conversion.file?.type.split('/')[1].toUpperCase()}&apos;</span>
+                {conversion.status === UXConversionStatus.Pending && <div>Pending</div>}
+                {conversion.status === UXConversionStatus.Uploading && <div>Uploading: {(conversion.upload || 0) * 100}%</div>}
+                {conversion.status === UXConversionStatus.Processing && <div>Converting</div>}
+                {conversion.status === UXConversionStatus.Error && <div>Error!</div>}
+                {conversion.status === UXConversionStatus.Complete && <div>Done</div>}
             </span>
-            {!conversion.resultId && (
-                <>
-                    <Combobox 
-                    value={conversion.to || ''}
-                        setValue={onConverTo}
-                    />
-                    <Button
-                        className="w-fit"
-                        variant='outline' onClick={onRemove}>
-                        <XIcon className="w-4 h-4" />
-                    </Button>
-                </>
-            )}
-            {conversion.resultId && (
-                <DownloadButton resultId={conversion.resultId} />
+
+            <>
+                <Combobox
+                    value={conversion.to?.ext || ''}
+                    setValue={onConverTo}
+                />
+                <Button
+                    className="w-fit"
+                    variant='outline' onClick={onRemove}>
+                    <XIcon className="w-4 h-4" />
+                </Button>
+            </>
+            {conversion.status === UXConversionStatus.Complete && (
+                <DownloadButton resultId={conversion.id} />
             )}
         </li>
     )

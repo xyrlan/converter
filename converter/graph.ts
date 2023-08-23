@@ -1,8 +1,8 @@
 import { Converter } from './converters/def';
-import * as rawConverters from './converters'
+import {converters as images} from './converters/image/converters'
 
+const converters = [...images]
 
-const converters = rawConverters as unknown as Record<string, Converter>
 console.log('Converters', converters)
 type Edge = {
     converter: Converter
@@ -15,9 +15,9 @@ type Node = {
     edges: Edge[]
 }
 
+
 const nodes: Record<string, Node> = {}
-Object.keys(converters).forEach((key) => {
-    const converter = converters[key as keyof typeof converters]
+converters.forEach((converter) => {
     nodes[converter.to] = nodes[converter.to] || {
         type: converter.to,
         edges: [],
@@ -33,8 +33,9 @@ Object.keys(converters).forEach((key) => {
     })
 })
 
-export { nodes }
+console.log('Graph', nodes)
 
+export { nodes }
 
 export type Path = Edge[] | null;
 
@@ -47,6 +48,7 @@ export function findPath(start: string, end: string) {
 
     while (queue.length > 0) {
         const current = queue.shift()
+        console.log('Current', current)
         if (!current) {
             continue;
         }
