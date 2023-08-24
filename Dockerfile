@@ -2,9 +2,9 @@ FROM node:18
 
 WORKDIR /usr/src/app
 
-RUN apt update && \
-    apt install -y build-essential libjpeg-dev libpng-dev libtiff-dev && \
-    apt install -y imagemagick
+RUN apt update 
+RUN apt install -y build-essential libjpeg-dev libpng-dev libtiff-dev
+RUN apt install -y imagemagick
 
 RUN npm install -g npm
 

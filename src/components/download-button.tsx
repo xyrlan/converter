@@ -13,7 +13,7 @@ export const DownloadButton = ({ resultId }: Props) => {
 
     return (
         <Button
-            className='font-semibold'
+            className=''
             as={Link}
             color='success'
             href={`/api/download/${resultId}`}

@@ -25,6 +25,7 @@ const convert = async (c: Conversion) => {
         console.log('Converting File', (c.fromMime, c.toMime))
 
         const converters = findPath(c.fromMime, c.toMime)
+        console.log('Converters', converters)
         if (!converters) {
             console.error(
                 `Could not find converters for ${c.fromMime} to ${c.toMime}`

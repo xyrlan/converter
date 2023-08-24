@@ -46,6 +46,7 @@ const convert = async (c) => {
         const res = await s3.getObject(downloadParams).promise();
         console.log('Converting File', (c.fromMime, c.toMime));
         const converters = (0, graph_1.findPath)(c.fromMime, c.toMime);
+        console.log('Converters', converters);
         if (!converters) {
             console.error(`Could not find converters for ${c.fromMime} to ${c.toMime}`);
             await prisma_1.prisma.conversion.update({

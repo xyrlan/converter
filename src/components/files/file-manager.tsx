@@ -42,7 +42,7 @@ export const FileManager = () => {
                             variant='default'
                             disabled={conversions.some(
                                 (conversion) => conversion.status === UXConversionStatus.Processing ||
-                                    conversion.status === UXConversionStatus.Uploading
+                                    conversion.status === UXConversionStatus.Uploading || conversion.status === UXConversionStatus.Complete
                             )}
                             onClick={convert}
                         >

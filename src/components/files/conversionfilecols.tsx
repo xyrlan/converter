@@ -57,20 +57,20 @@ const ConversionFiLeCols = ({ onRemove, conversion, onConverTo, onUpdate }: Conv
             </span>
 
             <span className="md:col-span-1 max-md:text-xs">
-                {conversion.status === UXConversionStatus.Pending && <div className='font-mono font-semibold flex items-center gap-2'>Pending...</div>}
+                {conversion.status === UXConversionStatus.Pending && <div className='font-mono flex items-center gap-2'>Convert to...</div>}
 
                 {conversion.status === UXConversionStatus.Uploading &&
-                    <div className='font-mono font-semibold flex items-center gap-2'>
+                    <div className='font-mono flex items-center gap-2'>
                         <div className="h-4 w-4 rounded-full border-4 border-t-transparent border-l-transparent animate-spin border-neutral-400" />
                         Uploading
                     </div>}
                 {conversion.status === UXConversionStatus.Processing &&
-                    <div className='font-mono flex items-center gap-2 font-semibold'>
+                    <div className='font-mono flex items-center gap-2 '>
                         <div className="h-4 w-4 rounded-full border-4 border-t-transparent border-l-transparent animate-spin border-neutral-400" />
                         Converting
                     </div>}
-                {conversion.status === UXConversionStatus.Error && <div className='font-mono text-red-600 font-semibold'>Error!</div>}
-                {conversion.status === UXConversionStatus.Complete && <div className='font-mono text-green-600 font-semibold'>Done</div>}
+                {conversion.status === UXConversionStatus.Error && <div className='font-mono text-red-600 '>Error!</div>}
+                {conversion.status === UXConversionStatus.Complete && <div className='font-mono text-green-600 '>Done</div>}
             </span>
 
             <div className="md:col-span-1 flex items-center gap-2">
