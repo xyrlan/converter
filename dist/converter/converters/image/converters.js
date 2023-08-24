@@ -12,7 +12,7 @@ const buildConverter = (from, to, params) => {
     const converter = async (buf) => {
         const file = (0, crypto_1.randomUUID)();
         await (0, promises_1.writeFile)(`/tmp/${file}.${(0, mime_types_1.extension)(from)}`, buf);
-        await exec(`magick /tmp/${file}.${(0, mime_types_1.extension)(from)} ${params !== null && params !== void 0 ? params : ''} /tmp/${file}.${(0, mime_types_1.extension)(to)}`);
+        await exec(`convert /tmp/${file}.${(0, mime_types_1.extension)(from)} ${params !== null && params !== void 0 ? params : ''} /tmp/${file}.${(0, mime_types_1.extension)(to)}`);
         return (0, promises_1.readFile)(`/tmp/${file}.${(0, mime_types_1.extension)(to)}`);
     };
     converter.from = from;

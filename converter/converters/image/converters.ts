@@ -11,7 +11,7 @@ const buildConverter = (from: string, to: string, params?: string): Converter =>
     const converter: Converter = async (buf) => {
         const file = randomUUID()
         await writeFile(`/tmp/${file}.${extension(from)}`, buf)
-        await exec(`magick /tmp/${file}.${extension(from)} ${params ?? ''} /tmp/${file}.${extension(to)}`)
+        await exec(`convert /tmp/${file}.${extension(from)} ${params ?? ''} /tmp/${file}.${extension(to)}`)
         return readFile(`/tmp/${file}.${extension(to)}`)
     }
     converter.from = from
